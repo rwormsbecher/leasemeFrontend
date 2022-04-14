@@ -1,16 +1,16 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
+import Login from "./Login";
+import reportWebVitals from "./reportWebVitals";
+import "./index.css";
+import { IntlProvider } from "react-intl";
+import { translationSets } from "./i18n/translations";
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+ReactDOM.render(
+    <IntlProvider locale={"nl"} messages={translationSets["nl"]}>
+        <Login />
+    </IntlProvider>,
+    document.getElementById("root") as HTMLElement
 );
 
 // If you want to start measuring performance in your app, pass a function
