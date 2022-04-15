@@ -9,7 +9,7 @@ const TopBarWrapper = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    background: white; ;
+    background: white;
 `;
 
 export const LoginTopBar = () => {

@@ -1,18 +1,208 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useEffect, useState } from "react";
+import { FormattedMessage, useIntl } from "react-intl";
+import styled, { ThemeProvider } from "styled-components";
+import { abfTheme } from "../../themes/abf";
+import { themeSelector } from "../../themes/themeselector";
+import { Header1 } from "../html/header";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { YellowButton } from "../html/YellowButton";
+
+const loginSchema = yup
+    .object({
+        username: yup.string().required(),
+        password: yup.string().required(),
+    })
+    .required();
 
 const LoginAreaWrapper = styled.div`
-    width: 33%;
+    width: 352px;
     display: flex;
+    flex-direction: column;
     position: absolute;
-    left: 33%;
+    left: calc((100% - 352px) / 2);
     top: 120px;
-    height: 200px;
     background: #ffffff;
     box-shadow: 0px 2px 2px rgba(34, 34, 34, 0.08);
     border-radius: 2px;
+    padding: 24px;
+
+    h1 {
+        color: ${(p) => p.theme.primaryColor};
+        width: 100%;
+        height: auto;
+    }
+
+    p {
+        line-height: 24px;
+    }
+`;
+
+const FormWrapper = styled.div`
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+`;
+
+const Label = styled.label`
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: ${(p) => p.theme.primaryColor};
+`;
+
+const ErrorLine = styled.p`
+    color: darkred;
+    font-style: italic;
+    margin-bottom: 8px;
+`;
+
+const Textbox = styled.input`
+    display: block;
+    padding: 8px 8px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: ${(p) => p.theme.primaryTextColor};
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    margin-bottom: 24px;
+    &:focus-visible {
+        outline: -webkit-focus-ring-color 1px;
+        outline-color: ${(p) => p.theme.primaryColor};
+        outline-style: auto;
+        outline-width: 1px;
+    }
+    &::placeholder {
+        /* Chrome, Firefox, Opera, Safari 10.1+ */
+        color: #999;
+        opacity: 1; /* Firefox */
+    }
+    &:-ms-input-placeholder {
+        /* Internet Explorer 10-11 */
+        color: #999;
+    }
+    &::-ms-input-placeholder {
+        /* Microsoft Edge */
+        color: #999;
+    }
+`;
+
+const HelpText = styled.p`
+    margin-bottom: 0;
+    color: #808080;
 `;
 
 export const LoginArea = () => {
-    return <LoginAreaWrapper>LoginArea</LoginAreaWrapper>;
+    const [theme, setTheme] = useState(abfTheme);
+    const intl = useIntl();
+
+    const getInitialData = async () => {
+        await setTheme(themeSelector("abf"));
+    };
+
+    useEffect(() => {
+        getInitialData();
+    }, []);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({
+        resolver: yupResolver(loginSchema),
+    });
+    const onSubmit = (data: any) => console.log(data);
+
+    return (
+        <ThemeProvider theme={theme}>
+            <LoginAreaWrapper>
+                <Header1>
+                    <FormattedMessage
+                        id="login.welcome"
+                        defaultMessage="Welkom"
+                    ></FormattedMessage>
+                    !
+                </Header1>
+
+                <p>
+                    <FormattedMessage
+                        id="login.introtext"
+                        defaultMessage="Log in door je gebruikersnaam en wachtwoord in te voeren"
+                    ></FormattedMessage>
+                </p>
+
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <FormWrapper>
+                        <Label htmlFor="username">
+                            <FormattedMessage
+                                id="login.username"
+                                defaultMessage="Gebruikersnaam"
+                            />
+                        </Label>
+                        {errors.username && (
+                            <ErrorLine role="alert" aria-label="username">
+                                <FormattedMessage
+                                    id="login.username.error"
+                                    defaultMessage="Voer een gebruikersnaam in"
+                                />
+                            </ErrorLine>
+                        )}
+                        <Textbox
+                            {...register("username")}
+                            id="username"
+                            name="username"
+                            tabIndex={1}
+                            autoFocus
+                        />
+
+                        <Label htmlFor="password">
+                            <FormattedMessage
+                                id="login.password"
+                                defaultMessage="Wachtwoord"
+                            />
+                        </Label>
+                        {errors.password && (
+                            <ErrorLine role="alert" aria-label="password">
+                                <FormattedMessage
+                                    id="login.password.error"
+                                    defaultMessage="Voer een wachtwoord in"
+                                />
+                            </ErrorLine>
+                        )}
+                        <Textbox
+                            {...register("password")}
+                            id="password"
+                            name="password"
+                            type="password"
+                            tabIndex={2}
+                        />
+                        <YellowButton
+                            text={intl.formatMessage({
+                                id: "login.loginbutton",
+                                defaultMessage: "Inloggen",
+                            })}
+                            type="submit"
+                            tabIndex={4}
+                        />
+                    </FormWrapper>
+                </form>
+
+                <HelpText>
+                    <FormattedMessage
+                        id="login.needhelp"
+                        defaultMessage="Heeft u hulp nodig? Neem contact op via 030 212 6020"
+                    ></FormattedMessage>
+                    .
+                </HelpText>
+            </LoginAreaWrapper>
+        </ThemeProvider>
+    );
 };

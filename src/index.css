@@ -7,6 +7,7 @@ body,
     height: 100%;
     background: #f9f9f9;
     font-family: "Roboto", sans-serif;
+    color: #222222;
 }
 
 h1,
@@ -16,4 +17,10 @@ h4,
 h5,
 h6 {
     font-family: "Roboto Condensed", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+p {
+    margin: 0 0 16px 0;
 }
