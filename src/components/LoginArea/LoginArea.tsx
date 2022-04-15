@@ -3,7 +3,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import styled, { ThemeProvider } from "styled-components";
 import { abfTheme } from "../../themes/abf";
 import { themeSelector } from "../../themes/themeselector";
-import { Header1 } from "../html/header";
+import { Header1 } from "../html/Header";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
