@@ -8,6 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { YellowButton } from "../html/YellowButton";
+import { useQuery } from "react-query";
 
 const loginSchema = yup
     .object({
@@ -112,6 +113,17 @@ export const LoginArea = () => {
         getInitialData();
     }, []);
 
+    async function submitLoginDetails(body: any) {
+        const response = await fetch(
+            "https://leaseme-api.azurewebsites.net/docs#/Auth/login_login_post",
+            {
+                method: "POST",
+                body,
+            }
+        );
+        return response.json();
+    }
+
     const {
         register,
         handleSubmit,
@@ -119,7 +131,14 @@ export const LoginArea = () => {
     } = useForm({
         resolver: yupResolver(loginSchema),
     });
-    const onSubmit = (data: any) => console.log(data);
+    // const onSubmit = (formData: any) => {
+    //     const { isLoading, isError, data, error } = useQuery(
+    //         "login",
+    //         submitLoginDetails
+    //     );
+    // }
+
+    const handleFormSubmit = () => {};
 
     return (
         <ThemeProvider theme={theme}>
@@ -139,7 +158,7 @@ export const LoginArea = () => {
                     ></FormattedMessage>
                 </p>
 
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form onSubmit={handleSubmit(handleFormSubmit)}>
                     <FormWrapper>
                         <Label htmlFor="username">
                             <FormattedMessage
