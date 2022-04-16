@@ -115,7 +115,7 @@ export const LoginArea = () => {
 
     async function submitLoginDetails(body: any) {
         const response = await fetch(
-            "https://leaseme-api.azurewebsites.net/docs#/Auth/login_login_post",
+            "https://leaseme-api.azurewebsites.net/login",
             {
                 method: "POST",
                 body,
