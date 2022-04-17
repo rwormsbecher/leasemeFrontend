@@ -3,7 +3,7 @@ import { YellowButton } from "./YellowButton";
 
 describe("HTML header tests", () => {
     test("should render H1 correctly with props", async () => {
-        render(<YellowButton text="test" tabIndex={4} isDisabled={true} />);
+        render(<YellowButton text="test" tabIndex={4} disabled={true} />);
         const button = screen.getByRole("button", { name: /test/i });
 
         expect(button.innerHTML).toBe("test");

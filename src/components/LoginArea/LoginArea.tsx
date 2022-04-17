@@ -3,12 +3,15 @@ import { FormattedMessage, useIntl } from "react-intl";
 import styled, { ThemeProvider } from "styled-components";
 import { abfTheme } from "../../themes/abf";
 import { themeSelector } from "../../themes/themeselector";
-import { Header1 } from "../html/Header";
+import { Header1 } from "../html/Headers";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { YellowButton } from "../html/YellowButton";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
+import { positiveResponseCode } from "../../utils/responseCodeHelper";
+import { IThemeModel } from "../../models/IThemeModel";
+import { Alert } from "react-bootstrap";
 
 const loginSchema = yup
     .object({
@@ -101,8 +104,21 @@ const HelpText = styled.p`
     color: #808080;
 `;
 
+interface ILoginResults {
+    token: string;
+}
+
 export const LoginArea = () => {
-    const [theme, setTheme] = useState(abfTheme);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({
+        resolver: yupResolver(loginSchema),
+    });
+
+    const [theme, setTheme] = useState<IThemeModel>(abfTheme);
+    const [error, setError] = useState<boolean>(false);
     const intl = useIntl();
 
     const getInitialData = async () => {
@@ -113,42 +129,38 @@ export const LoginArea = () => {
         getInitialData();
     }, []);
 
-    async function submitLoginDetails(body: any) {
-        const response = await fetch(
-            "https://leaseme-api.azurewebsites.net/login",
-            {
-                method: "POST",
-                body,
-            }
-        );
-        return response.json();
+    async function submitLogin<ILoginResults>(body: any) {
+        const response = await fetch("https://leaseme-api.azurewebsites.net/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: body.username,
+                password: body.password,
+            }),
+        });
+
+        if (positiveResponseCode(response.status)) {
+            const results: any | ILoginResults = await response.json();
+            localStorage.setItem("user", results?.token);
+            setError(false);
+        } else {
+            setError(true);
+        }
     }
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm({
-        resolver: yupResolver(loginSchema),
-    });
-    // const onSubmit = (formData: any) => {
-    //     const { isLoading, isError, data, error } = useQuery(
-    //         "login",
-    //         submitLoginDetails
-    //     );
-    // }
+    const loginMutation = useMutation((body) => submitLogin(body));
 
-    const handleFormSubmit = () => {};
+    const submit = (data: any) => {
+        loginMutation.mutate(data);
+    };
 
     return (
         <ThemeProvider theme={theme}>
             <LoginAreaWrapper>
                 <Header1>
-                    <FormattedMessage
-                        id="login.welcome"
-                        defaultMessage="Welkom"
-                    ></FormattedMessage>
-                    !
+                    <FormattedMessage id="login.welcome" defaultMessage="Welkom"></FormattedMessage>!
                 </Header1>
 
                 <p>
@@ -158,13 +170,21 @@ export const LoginArea = () => {
                     ></FormattedMessage>
                 </p>
 
-                <form onSubmit={handleSubmit(handleFormSubmit)}>
+                {error ? (
+                    <Alert variant="danger">
+                        <FormattedMessage
+                            id="login.error"
+                            defaultMessage="Er is een fout opgetreden tijdens het inloggen. controleer uw gegevens en probeer het nogmaals"
+                        ></FormattedMessage>
+                        .
+                    </Alert>
+                ) : (
+                    ""
+                )}
+                <form onSubmit={handleSubmit(submit)}>
                     <FormWrapper>
                         <Label htmlFor="username">
-                            <FormattedMessage
-                                id="login.username"
-                                defaultMessage="Gebruikersnaam"
-                            />
+                            <FormattedMessage id="login.username" defaultMessage="Gebruikersnaam" />
                         </Label>
                         {errors.username && (
                             <ErrorLine role="alert" aria-label="username">
@@ -174,40 +194,23 @@ export const LoginArea = () => {
                                 />
                             </ErrorLine>
                         )}
-                        <Textbox
-                            {...register("username")}
-                            id="username"
-                            name="username"
-                            tabIndex={1}
-                            autoFocus
-                        />
+                        <Textbox {...register("username")} id="username" name="username" tabIndex={1} autoFocus />
 
                         <Label htmlFor="password">
-                            <FormattedMessage
-                                id="login.password"
-                                defaultMessage="Wachtwoord"
-                            />
+                            <FormattedMessage id="login.password" defaultMessage="Wachtwoord" />
                         </Label>
                         {errors.password && (
                             <ErrorLine role="alert" aria-label="password">
-                                <FormattedMessage
-                                    id="login.password.error"
-                                    defaultMessage="Voer een wachtwoord in"
-                                />
+                                <FormattedMessage id="login.password.error" defaultMessage="Voer een wachtwoord in" />
                             </ErrorLine>
                         )}
-                        <Textbox
-                            {...register("password")}
-                            id="password"
-                            name="password"
-                            type="password"
-                            tabIndex={2}
-                        />
+                        <Textbox {...register("password")} id="password" name="password" type="password" tabIndex={2} />
                         <YellowButton
                             text={intl.formatMessage({
                                 id: "login.loginbutton",
                                 defaultMessage: "Inloggen",
                             })}
+                            disabled={loginMutation.isLoading}
                             type="submit"
                             tabIndex={4}
                         />

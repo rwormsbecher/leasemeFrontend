@@ -13,22 +13,17 @@ const YellowButtonRegular = styled.button`
     margin-bottom: 16px;
     font-size: 16px;
     cursor: pointer;
+
+    &:disabled {
+        background: #aaa;
+        color: #222;
+    }
 `;
 
-interface IYellowButtonProps
-    extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface IYellowButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     text: string;
-    isDisabled?: boolean;
 }
 
-export const YellowButton = ({
-    text,
-    isDisabled,
-    ...props
-}: IYellowButtonProps) => {
-    return (
-        <YellowButtonRegular {...props} disabled={isDisabled ? true : false}>
-            {text}
-        </YellowButtonRegular>
-    );
+export const YellowButton = ({ text, ...props }: IYellowButtonProps) => {
+    return <YellowButtonRegular {...props}>{text}</YellowButtonRegular>;
 };

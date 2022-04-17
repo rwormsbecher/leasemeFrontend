@@ -24,3 +24,7 @@ h6 {
 p {
     margin: 0 0 16px 0;
 }
+
+.alert {
+    padding: 8px 16px;
+}

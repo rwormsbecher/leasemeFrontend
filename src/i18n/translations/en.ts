@@ -8,4 +8,5 @@ export default {
     "login.password": "Password",
     "login.password.error": "Please enter a password",
     "login.loginbutton": "Login",
+    "login.error": "An error occured while logging in, check your credentials and try again",
 };

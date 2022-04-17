@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import React from "react";
-import { Header1, Header2, Header3 } from "./Header";
+import { Header1, Header2, Header3 } from "./Headers";
 
 describe("HTML header tests", () => {
     test("should render H1 correctly with props", async () => {
