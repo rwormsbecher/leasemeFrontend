@@ -1,8 +1,7 @@
-import React from "react";
 import styled from "styled-components";
-import { Jumbotron } from "./components/jumbotron/jumbotron";
-import { LoginArea } from "./components/LoginArea/LoginArea";
-import { LoginTopBar } from "./components/LoginTopBar/LoginTopBar";
+import { Jumbotron } from "../../components/jumbotron/jumbotron";
+import { LoginArea } from "../../components/LoginArea/LoginArea";
+import { LoginTopBar } from "../../components/LoginTopBar/LoginTopBar";
 
 const Main = styled.main`
     width: 100%;

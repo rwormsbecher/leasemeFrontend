@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import styled, { ThemeProvider } from "styled-components";
 import { abfTheme } from "../../themes/abf";
@@ -8,10 +8,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { YellowButton } from "../html/YellowButton";
-import { useMutation, useQuery } from "react-query";
+import { useMutation } from "react-query";
 import { positiveResponseCode } from "../../utils/responseCodeHelper";
 import { IThemeModel } from "../../models/IThemeModel";
 import { Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 const loginSchema = yup
     .object({
@@ -104,10 +105,6 @@ const HelpText = styled.p`
     color: #808080;
 `;
 
-interface ILoginResults {
-    token: string;
-}
-
 export const LoginArea = () => {
     const {
         register,
@@ -116,6 +113,7 @@ export const LoginArea = () => {
     } = useForm({
         resolver: yupResolver(loginSchema),
     });
+    const navigate = useNavigate();
 
     const [theme, setTheme] = useState<IThemeModel>(abfTheme);
     const [error, setError] = useState<boolean>(false);
@@ -129,7 +127,7 @@ export const LoginArea = () => {
         getInitialData();
     }, []);
 
-    async function submitLogin<ILoginResults>(body: any) {
+    async function submitLogin(body: any) {
         const response = await fetch("https://leaseme-api.azurewebsites.net/login", {
             method: "POST",
             headers: {
@@ -141,10 +139,13 @@ export const LoginArea = () => {
             }),
         });
 
+        console.log("1", response.status);
+
         if (positiveResponseCode(response.status)) {
-            const results: any | ILoginResults = await response.json();
+            const results = await response.json();
             localStorage.setItem("user", results?.token);
-            setError(false);
+            console.log("going to navigate");
+            return navigate("/home", { replace: true });
         } else {
             setError(true);
         }
@@ -159,6 +160,7 @@ export const LoginArea = () => {
     return (
         <ThemeProvider theme={theme}>
             <LoginAreaWrapper>
+                {loginMutation.isSuccess ? <div style={{ display: "none" }} data-testid="success"></div> : ""}
                 <Header1>
                     <FormattedMessage id="login.welcome" defaultMessage="Welkom"></FormattedMessage>!
                 </Header1>
